@@ -1,0 +1,5 @@
+node_modules
+twitter-auth.token
+currentDate.txt
+dist
+.idea
