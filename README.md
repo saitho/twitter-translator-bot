@@ -40,4 +40,6 @@ Usage (environment variables required!): `node dist/index.js`
     * SL
     * SV
     * ZH
+* `FIXED_TRANSLATIONS` - List of fixed terms to translate with a fixed term
+  * Example (always replace foo by bar): `FIXED_TRANSLATIONS='[["foo", "bar"]]'`
 

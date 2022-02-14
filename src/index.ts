@@ -3,24 +3,25 @@ import reply from "./reply"
 import translate from "./translate"
 
 import {getAuthenticatedClient} from "./oauth/client";
-import {sanitizeTweet, unsanitizeTweetText} from "./sanitizer";
+import {buildFixedTranslationsFromEnv, sanitizeTweet, unsanitizeTweetText} from "./sanitizer";
 import {normalizeLanguageCode} from "./language";
 
 (async () => {
     const targetLanguage = normalizeLanguageCode(process.env.TARGET_LANGUAGE || 'EN')
     const authedClient = await getAuthenticatedClient()
+    const fixedTranslations = buildFixedTranslationsFromEnv()
 
     await fetch(targetLanguage, authedClient)
         .then(async (tweets) => {
             for (const tweet of tweets) {
                 const tweetText = tweet.text
 
-                const sanitizedTweet = sanitizeTweet(tweetText)
+                const sanitizedTweet = sanitizeTweet(tweetText, fixedTranslations)
                 const translation = await translate(tweet.lang as string, targetLanguage, sanitizedTweet)
                 if (translation === '') {
                     continue
                 }
-                const adaptedText = unsanitizeTweetText(translation)
+                const adaptedText = unsanitizeTweetText(translation, fixedTranslations)
                 await reply(authedClient, targetLanguage, tweet.id, adaptedText)
             }
         })
@@ -30,6 +31,3 @@ import {normalizeLanguageCode} from "./language";
         })
     process.exit();
 })();
-
-
-// requestOAuth()

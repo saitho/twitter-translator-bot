@@ -4,8 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "build": "NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p",
-    "start": "webpack && node ./dist/index.js",
+    "build": "(cd node_modules/deepl && tsc) && NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p",
+    "start": "(cd node_modules/deepl && tsc) && webpack && node ./dist/index.js",
     "test": "jest"
   },
   "repository": {
@@ -20,7 +20,7 @@
   "homepage": "https://github.com/saitho/twitter-translator-bot#readme",
   "dependencies": {
     "@types/express": "^4.17.13",
-    "deepl": "^1.0.13",
+    "deepl": "github:saitho/deepl",
     "express": "^4.17.2",
     "sentence-splitter": "^3.2.2",
     "twitter-api-v2": "^1.10.3"
