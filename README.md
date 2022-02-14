@@ -40,3 +40,4 @@ Usage (environment variables required!): `node dist/index.js`
     * SL
     * SV
     * ZH
+
