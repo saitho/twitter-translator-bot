@@ -1,0 +1,22 @@
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0">
+    <file id="translations"> <!-- this must use id="translations"! -->
+        <unit id="foo"> <!-- make sure to set an id on every unit. the id name does not matter -->
+            <segment>
+                <source>foo</source>
+                <target>bar</target>
+            </segment>
+        </unit>
+        <unit id="foobar">
+            <segment>
+                <source>foobar</source>
+                <target>Foo, bar!</target>
+            </segment>
+        </unit>
+        <unit id="bar foo?">
+            <segment>
+                <source>bar foo?</source>
+                <target>foo bar?</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>

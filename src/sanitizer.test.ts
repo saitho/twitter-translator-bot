@@ -1,10 +1,10 @@
 import {
+    buildFixedTranslationsFromEnv,
     sanitizeTweet,
     unsanitizeTweetText
 } from "./sanitizer"
 
 describe('Sanitizer', () => {
-
     const data = [
         {
             label: 'hashtags at the start',
@@ -72,6 +72,17 @@ describe('Sanitizer', () => {
     describe.each(data)(`Unsanitize a tweet with...`, (tweet) => {
         it(`${tweet.label}`, () => {
             expect(unsanitizeTweetText(tweet.output, tweet.fixedTranslations)).toBe(tweet.output_unsanitized)
+        });
+    });
+
+    describe(`Build fixed translations from env`, () => {
+        it(`builds a valid object`, () => {
+            process.env.FIXED_TRANSLATIONS_FILE = __dirname + '/../translations.xlf'
+            expect(buildFixedTranslationsFromEnv()).toStrictEqual({
+                foo: 'bar',
+                foobar: 'Foo, bar!',
+                "bar foo?": 'foo bar?'
+            })
         });
     });
 })

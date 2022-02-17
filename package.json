@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/saitho/twitter-translator-bot.git"
   },
-  "author": "",
+  "author": "Mario Lubenka <me@saitho.me>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/saitho/twitter-translator-bot/issues"
@@ -23,7 +23,8 @@
     "deepl": "github:saitho/deepl",
     "express": "^4.17.2",
     "sentence-splitter": "^3.2.2",
-    "twitter-api-v2": "^1.10.3"
+    "twitter-api-v2": "^1.10.3",
+    "xliff": "^6.0.1"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

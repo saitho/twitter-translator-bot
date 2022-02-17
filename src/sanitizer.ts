@@ -1,3 +1,7 @@
+// @ts-ignore
+import xliff from 'xliff'
+import fs from "fs";
+
 export const sanitizerTags = ['sh', 'su', 'sw']
 
 /**
@@ -23,20 +27,25 @@ type FixedTranslations = any
 
 export function buildFixedTranslationsFromEnv(): FixedTranslations {
     const obj: FixedTranslations = {}
-    if (!('FIXED_TRANSLATIONS' in process.env)) {
+    if (!('FIXED_TRANSLATIONS_FILE' in process.env)) {
         return obj
     }
-    const list = JSON.parse(process.env.FIXED_TRANSLATIONS!) || [];
-    for (const item of list) {
-        if (!Array.isArray(item)) {
-            continue
+    const filePath = process.env.FIXED_TRANSLATIONS_FILE as string
+    const fileContents = fs.readFileSync(filePath).toString()
+    xliff.xliff2js(fileContents, (err: Error, res: any) => {
+        if (err) {
+            console.error(err)
+            process.exit(1)
+            return
         }
-        if (item.length !== 2) {
-            continue
+        for (const translationId of Object.keys(res.resources.translations)) {
+            const item = res.resources.translations[translationId]
+            if (!item.source || !item.target) {
+                continue
+            }
+            obj[item.source] = item.target
         }
-        const [key, value] = item as string[]
-        obj[key] = value
-    }
+    })
     return obj
 }
 

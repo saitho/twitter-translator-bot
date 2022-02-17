@@ -40,6 +40,6 @@ Usage (environment variables required!): `node dist/index.js`
     * SL
     * SV
     * ZH
-* `FIXED_TRANSLATIONS` - List of fixed terms to translate with a fixed term
-  * Example (always replace foo by bar): `FIXED_TRANSLATIONS='[["foo", "bar"]]'`
+* `FIXED_TRANSLATIONS_FILE` - Path to XLF file containing the fixed translations
+  * Example: `FIXED_TRANSLATIONS_FILE=./translations.xlf` (see `translations.xlf` in this repository for an example)
 
