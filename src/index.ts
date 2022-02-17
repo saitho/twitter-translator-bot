@@ -4,7 +4,7 @@ import translate from "./translate"
 
 import {getAuthenticatedClient} from "./oauth/client";
 import {buildFixedTranslationsFromEnv, sanitizeTweet, unsanitizeTweetText} from "./sanitizer";
-import {normalizeLanguageCode} from "./language";
+import {isTranslatable, normalizeLanguageCode} from "./language";
 
 (async () => {
     const targetLanguage = normalizeLanguageCode(process.env.TARGET_LANGUAGE || 'EN')
@@ -15,6 +15,9 @@ import {normalizeLanguageCode} from "./language";
         .then(async (tweets) => {
             for (const tweet of tweets) {
                 const tweetText = tweet.text
+                if (!isTranslatable(tweetText)) {
+                    continue
+                }
 
                 const sanitizedTweet = sanitizeTweet(tweetText, fixedTranslations)
                 const translation = await translate(tweet.lang as string, targetLanguage, sanitizedTweet)

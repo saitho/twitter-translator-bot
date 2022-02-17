@@ -39,3 +39,12 @@ export function getFlag(targetLanguage: string): string {
     }
     return flags[targetLanguage]
 }
+
+
+/**
+ * @param text
+ */
+export function isTranslatable(text: string): boolean {
+    const translatableExpression = process.env.TRANSLATABLE_MATCH_EXPRESSION || '[a-zA-Z]+'
+    return text.match(new RegExp(translatableExpression)) != null
+}
