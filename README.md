@@ -26,14 +26,18 @@ version: "2"
 services:
   app:
     image: saitho/twitter-translator-bot:latest
+    restart: unless-stopped
     environment:
       - TWITTER_ACCOUNTS=saitho95
       - DEEPL_AUTH=YOUR_DEEPL_AUTHTOKEN
       - CONSUMER_KEY=YOUR_TWITTER_KEY
       - CONSUMER_SECRET=YOUR_TWITTER_SECRET
     volumes:
-      - ./fixed-translations.xlf:/fixed-translations.xlf
       - ./data:/data
       - ./logs:/logs
-
 ```
+
+_Note:_ On first run it establishes OAuth2 access. Therefore you need to expose the port 4114 to the outside.
+Make sure to configure the public IP and port as redirect URL on Twitter and also set it in `OAUTH_HOST` environment variable.
+
+Alternatively, initialize it outside of Docker and copy the `data/twitter-auth.token` file in the data directory mounted by Docker.

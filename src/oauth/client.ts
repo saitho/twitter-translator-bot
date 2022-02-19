@@ -16,11 +16,12 @@ if (!clientId.length || !clientSecret.length) {
 }
 
 let client = new TwitterApi({clientId, clientSecret});
+const oAuthHost = process.env.OAUTH_HOST || '127.0.0.1:4114'
 
 function requestOAuth(): EventEmitter {
     const oAuthServer = new OAuthServer({
         client: client,
-        redirectUri: 'http://127.0.0.1:4114/oauth/verify/',
+        redirectUri: `http://${oAuthHost}/oauth/verify/`,
         scopes: ['tweet.read', 'tweet.write', 'users.read', 'offline.access']
     })
     oAuthServer.start()

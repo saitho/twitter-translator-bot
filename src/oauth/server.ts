@@ -70,7 +70,8 @@ export class OAuthServer {
     }
 
     public start(): void {
-        const startUrl = 'http://localhost:4114/oauth/start'
+        const oAuthHost = process.env.OAUTH_HOST || '127.0.0.1:4114'
+        const startUrl = `http://${oAuthHost}/oauth/start`
         if (this.serverStarted) {
             this.em.emit('started', startUrl);
             return;
