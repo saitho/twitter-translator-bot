@@ -1,6 +1,7 @@
 // @ts-ignore
 import xliff from 'xliff'
 import fs from "fs";
+import {logger} from "./logger";
 
 export const sanitizerTags = ['sh', 'su', 'sw']
 
@@ -34,7 +35,7 @@ export function buildFixedTranslationsFromEnv(): FixedTranslations {
     const fileContents = fs.readFileSync(filePath).toString()
     xliff.xliff2js(fileContents, (err: Error, res: any) => {
         if (err) {
-            console.error(err)
+            logger.error(err)
             process.exit(1)
             return
         }

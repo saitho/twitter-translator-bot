@@ -1,5 +1,5 @@
 node_modules
-twitter-auth.token
-currentDate.txt
+data
+logs
 dist
 .idea

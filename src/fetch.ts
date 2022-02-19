@@ -2,10 +2,14 @@
 // https://developer.twitter.com/en/docs/twitter-api/tweets/search/quick-start/recent-search
 import * as fs from "fs"
 import {TweetV2, Tweetv2SearchParams, TwitterApi} from "twitter-api-v2";
+import {logger} from "./logger";
+import path from "path";
+
+const currentDateFile = path.join(__dirname + '..', '..', 'data', 'currentDate.txt')
 
 let startTime: Date | null = null;
-if (fs.existsSync('./currentDate.txt')) {
-  const currentDate = fs.readFileSync('./currentDate.txt').toString().trim()
+if (fs.existsSync(currentDateFile)) {
+  const currentDate = fs.readFileSync(currentDateFile).toString().trim()
   startTime = currentDate.length ? new Date(currentDate) : null
 }
 
@@ -17,6 +21,10 @@ export default function fetch(targetLanguage: string, authedClient: TwitterApi):
       options.start_time = startTime.toISOString()
     }
     const accounts = process.env.TWITTER_ACCOUNTS || ''
+    if (!accounts.length) {
+      logger.error(`Missing TWITTER_ACCOUNTS environment variable.`)
+      process.exit(1)
+    }
     const accountsArr = accounts.split(',').map((a) => a.trim()).filter((a) => a.length)
 
     let currentCheckTime = new Date()
@@ -27,6 +35,7 @@ export default function fetch(targetLanguage: string, authedClient: TwitterApi):
 
     let newStartTime = startTime;
     if (!jsTweets.tweets.length) {
+      logger.debug(`Checking tweets of ${accounts} – no new tweets`)
       return
     }
     for await (const tweet of jsTweets) {
@@ -37,6 +46,7 @@ export default function fetch(targetLanguage: string, authedClient: TwitterApi):
       if (tweet.lang!.toLowerCase() === targetLanguage.toLowerCase()) {
         continue
       }
+      logger.debug(`Received tweet #${tweet.id} from ${tweet.author_id}: ${tweet.text}`)
       tweets.push(tweet)
     }
 
@@ -46,7 +56,7 @@ export default function fetch(targetLanguage: string, authedClient: TwitterApi):
       if (currentCheckTime > timePlusSecond) {
         timePlusSecond = currentCheckTime
       }
-      fs.writeFileSync('./currentDate.txt', timePlusSecond.toISOString().trim())
+      fs.writeFileSync(currentDateFile, timePlusSecond.toISOString().trim())
     }
     resolve(tweets)
   })

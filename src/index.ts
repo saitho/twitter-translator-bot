@@ -5,6 +5,7 @@ import translate from "./translate"
 import {getAuthenticatedClient} from "./oauth/client";
 import {buildFixedTranslationsFromEnv, sanitizeTweet, unsanitizeTweetText} from "./sanitizer";
 import {isTranslatable, normalizeLanguageCode} from "./language";
+import {logger} from "./logger";
 
 (async () => {
     const targetLanguage = normalizeLanguageCode(process.env.TARGET_LANGUAGE || 'EN')
@@ -29,7 +30,7 @@ import {isTranslatable, normalizeLanguageCode} from "./language";
             }
         })
         .catch((error: Error) => {
-            console.error(error)
+            logger.error(error)
             process.exit(-1);
         })
     process.exit();

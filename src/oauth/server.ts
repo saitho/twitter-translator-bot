@@ -2,6 +2,7 @@
 import express from 'express';
 import EventEmitter from "events";
 import {TwitterApi} from "twitter-api-v2";
+import {logger} from "../logger";
 
 type ServerOptions = {
     client: TwitterApi;
@@ -76,14 +77,14 @@ export class OAuthServer {
         }
         const server = this.server.listen(4114,() => {
             this.serverStarted = true;
-            console.log('OAuth server started')
+            logger.debug('OAuth server started')
             this.em.emit('started', startUrl);
             this.em.addListener('stop', () => {
                 if (!this.serverStarted) {
                     return;
                 }
                 server.close();
-                console.log('OAuth server stopped')
+                logger.debug('OAuth server stopped')
                 this.serverStarted = false;
             })
         });

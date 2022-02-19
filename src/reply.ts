@@ -1,6 +1,7 @@
 import {TweetV2PostTweetResult, TwitterApi} from "twitter-api-v2";
 import {split} from "sentence-splitter";
 import {getFlag} from "./language";
+import {logger} from "./logger";
 
 const TWITTER_CHARACTER_LIMIT = 280;
 
@@ -49,11 +50,14 @@ export default async function reply(authedClient: TwitterApi, targetLanguage: st
             // text exceeds limit, split it
             let textParts = buildTextParts(text, targetLanguage)
             let replyId = originalTweetId
+            const total = textParts.length
             for (const i in textParts) {
-                const parsedText = parseTemplate(replySplitTemplate, targetLanguage, textParts[i], (Number(i) + 1), textParts.length)
+                const curr = (Number(i) + 1)
+                const parsedText = parseTemplate(replySplitTemplate, targetLanguage, textParts[i], curr, total)
+                logger.debug(`Tweeting translated tweet #${originalTweetId} (tweet ${curr}/${total}): ${parsedText}`)
                 const reply = await sendReply(authedClient, replyId, parsedText)
                 if (!reply) {
-                    console.error('Unable to tweet reply. Aborting')
+                    logger.error('Unable to tweet reply. Aborting')
                     reject()
                     return
                 }
@@ -65,6 +69,7 @@ export default async function reply(authedClient: TwitterApi, targetLanguage: st
 
         // Text length is okay, tweet as-is
         const parsedText = parseTemplate(replyTemplate, targetLanguage, text, 1, 1)
+        logger.debug(`Tweeting translated tweet #${originalTweetId} (tweet 1/1): ${parsedText}`)
         sendReply(authedClient, originalTweetId, parsedText)
             .then(() => resolve())
             .catch(reject)

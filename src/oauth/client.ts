@@ -2,11 +2,20 @@ import {TwitterApi} from "twitter-api-v2";
 import EventEmitter from "events";
 import {OAuthServer} from "./server";
 import fs from "fs";
+import {logger} from "../logger";
+import * as path from "path";
 
-let client = new TwitterApi({
-    clientId: process.env.CONSUMER_KEY as string,
-    clientSecret: process.env.CONSUMER_SECRET
-});
+const clientId = process.env.CONSUMER_KEY || ''
+const clientSecret = process.env.CONSUMER_SECRET || ''
+
+const tokenPath = path.join(__dirname + '..', '..', 'data', 'twitter-auth.token')
+
+if (!clientId.length || !clientSecret.length) {
+    logger.error('Missing CONSUMER_KEY or CONSUMER_SECRET environment variable!')
+    process.exit(1)
+}
+
+let client = new TwitterApi({clientId, clientSecret});
 
 function requestOAuth(): EventEmitter {
     const oAuthServer = new OAuthServer({
@@ -17,17 +26,17 @@ function requestOAuth(): EventEmitter {
     oAuthServer.start()
     const em = oAuthServer.getEventEmitter();
     em.addListener('started', async (startUrl: string) => {
-        console.log('Please visit this URL to authenticate your Twitter account: ' + startUrl)
+        logger.info('Please visit this URL to authenticate your Twitter account: ' + startUrl)
     })
     em.addListener('oauth_granted', async (loggedClient: TwitterApi, accessToken: string, refreshToken: string, expiresIn: number) => {
-        fs.writeFileSync('./twitter-auth.token', JSON.stringify({
+        fs.writeFileSync(tokenPath, JSON.stringify({
             accessToken,
             refreshToken
         }))
         oAuthServer.stop()
     })
     em.addListener('oauth_failed', async (errorMessage: string) => {
-        console.log('Authentication error: ' + errorMessage)
+        logger.error('Authentication error: ' + errorMessage)
         process.exit(1)
     })
     return em
@@ -35,7 +44,8 @@ function requestOAuth(): EventEmitter {
 
 export function getAuthenticatedClient(): Promise<TwitterApi> {
     return new Promise<TwitterApi>(async (resolve, reject) => {
-        if (!fs.existsSync('./twitter-auth.token')) {
+        if (!fs.existsSync(tokenPath)) {
+            logger.debug(`No twitter-auth.token file found. Requesting OAuth`)
             requestOAuth()
                 .addListener('oauth_granted', (loggedClient: TwitterApi) => {
                     resolve(loggedClient)
@@ -45,7 +55,7 @@ export function getAuthenticatedClient(): Promise<TwitterApi> {
                 })
             return
         }
-        const tokens = fs.readFileSync('./twitter-auth.token').toString()
+        const tokens = fs.readFileSync(tokenPath).toString()
         const {accessToken, refreshToken} = JSON.parse(tokens)
 
         // Refresh token
@@ -55,7 +65,7 @@ export function getAuthenticatedClient(): Promise<TwitterApi> {
             refreshToken: newRefreshToken
         } = await client.refreshOAuth2Token(refreshToken)
         if (!newRefreshToken) {
-            console.error('Unable to renew access token')
+            logger.error('Unable to renew access token')
             requestOAuth()
                 .addListener('oauth_granted', (loggedClient: TwitterApi) => {
                     resolve(loggedClient)
@@ -65,8 +75,8 @@ export function getAuthenticatedClient(): Promise<TwitterApi> {
                 })
             return
         }
-        console.log('Renewed token')
-        fs.writeFileSync('./twitter-auth.token', JSON.stringify({
+        logger.debug('Renewed token')
+        fs.writeFileSync(tokenPath, JSON.stringify({
             accessToken: newAccessToken,
             refreshToken: newRefreshToken
         }))
