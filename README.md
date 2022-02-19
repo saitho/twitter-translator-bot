@@ -17,3 +17,23 @@ Usage (environment variables required!): `node dist/index.js`
   * Example: `FIXED_TRANSLATIONS_FILE=./translations.xlf` (see `translations.xlf` in this repository for an example)
 * `TRANSLATABLE_MATCH_EXPRESSION` - regular expression that needs to be matched in order for a text to get translated (default: `[a-zA-Z]+`)
 
+## Docker
+
+Example docker-compose.yml
+
+```yaml
+version: "2"
+services:
+  app:
+    image: saitho/twitter-translator-bot:latest
+    environment:
+      - TWITTER_ACCOUNTS=saitho95
+      - DEEPL_AUTH=YOUR_DEEPL_AUTHTOKEN
+      - CONSUMER_KEY=YOUR_TWITTER_KEY
+      - CONSUMER_SECRET=YOUR_TWITTER_SECRET
+    volumes:
+      - ./fixed-translations.xlf:/fixed-translations.xlf
+      - ./data:/data
+      - ./logs:/logs
+
+```
