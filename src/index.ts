@@ -12,7 +12,14 @@ import {logger} from "./logger";
     const authedClient = await getAuthenticatedClient()
     const fixedTranslations = buildFixedTranslationsFromEnv()
 
-    await fetch(targetLanguage, authedClient)
+    const accounts = process.env.TWITTER_ACCOUNTS || ''
+    if (!accounts.length) {
+        logger.error(`Missing TWITTER_ACCOUNTS environment variable.`)
+        process.exit(1)
+    }
+    const accountsArr = accounts.split(',').map((a) => a.trim()).filter((a) => a.length)
+
+    await fetch(accountsArr, targetLanguage, authedClient)
         .then(async (tweets) => {
             for (const tweet of tweets) {
                 const tweetText = tweet.text

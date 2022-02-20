@@ -3,12 +3,11 @@ import EventEmitter from "events";
 import {OAuthServer} from "./server";
 import fs from "fs";
 import {logger} from "../logger";
-import * as path from "path";
 
 const clientId = process.env.CONSUMER_KEY || ''
 const clientSecret = process.env.CONSUMER_SECRET || ''
 
-const tokenPath = path.join(__dirname + '..', '..', 'data', 'twitter-auth.token')
+const tokenPath = './data/twitter-auth.token'
 
 if (!clientId.length || !clientSecret.length) {
     logger.error('Missing CONSUMER_KEY or CONSUMER_SECRET environment variable!')

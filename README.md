@@ -32,6 +32,7 @@ services:
       - DEEPL_AUTH=YOUR_DEEPL_AUTHTOKEN
       - CONSUMER_KEY=YOUR_TWITTER_KEY
       - CONSUMER_SECRET=YOUR_TWITTER_SECRET
+      - LOGLEVEL=info
     volumes:
       - ./data:/data
       - ./logs:/logs

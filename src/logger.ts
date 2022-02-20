@@ -1,9 +1,10 @@
 import winston from "winston"
 import path from "path";
 
-const logDir = path.join(__dirname, '..', 'logs')
+const logDir = './logs'
+console.log('Saving logs to ' + logDir)
 export const logger = winston.createLogger({
-    level: 'debug',
+    level: process.env.LOGLEVEL || 'debug',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()

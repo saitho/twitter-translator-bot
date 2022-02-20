@@ -3,39 +3,31 @@
 import * as fs from "fs"
 import {TweetV2, Tweetv2SearchParams, TwitterApi} from "twitter-api-v2";
 import {logger} from "./logger";
-import path from "path";
 
-const currentDateFile = path.join(__dirname + '..', '..', 'data', 'currentDate.txt')
+const currentDateFile = './data/currentDate.txt'
 
-let startTime: Date | null = null;
+let startTime: Date | null = null
 if (fs.existsSync(currentDateFile)) {
   const currentDate = fs.readFileSync(currentDateFile).toString().trim()
   startTime = currentDate.length ? new Date(currentDate) : null
 }
 
-export default function fetch(targetLanguage: string, authedClient: TwitterApi): Promise<TweetV2[]> {
+export default function fetch(accounts: string[], targetLanguage: string, authedClient: TwitterApi): Promise<TweetV2[]> {
   return new Promise<any[]>(async (resolve) => {
     const tweets: TweetV2[] = []
     const options: Partial<Tweetv2SearchParams> = {"tweet.fields": ["created_at", "lang", "author_id"]}
     if (startTime) {
       options.start_time = startTime.toISOString()
     }
-    const accounts = process.env.TWITTER_ACCOUNTS || ''
-    if (!accounts.length) {
-      logger.error(`Missing TWITTER_ACCOUNTS environment variable.`)
-      process.exit(1)
-    }
-    const accountsArr = accounts.split(',').map((a) => a.trim()).filter((a) => a.length)
-
     let currentCheckTime = new Date()
     const jsTweets = await authedClient.v2.search(
-        `(${accountsArr.map(a => 'from:' + a).join(' OR ')}) -is:retweet -is:reply`,
+        `(${accounts.map(a => 'from:' + a).join(' OR ')}) -is:retweet -is:reply`,
         options
     )
 
     let newStartTime = startTime;
     if (!jsTweets.tweets.length) {
-      logger.debug(`Checking tweets of ${accounts} – no new tweets`)
+      logger.info(`Checking tweets of ${accounts.join(',')} – no new tweets since ${options.start_time}`)
       return
     }
     for await (const tweet of jsTweets) {
