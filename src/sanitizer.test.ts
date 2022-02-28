@@ -61,6 +61,13 @@ describe('Sanitizer', () => {
             output: '<su>saitho95</su> <sw>これ</sw>はテストツイートです。<sh>#test</sh>  無視してください。🙈 <sh>#twitter</sh> <sh>#ツイッター</sh>',
             output_unsanitized: 'saitho95 foobarはテストツイートです。#test  無視してください。🙈 #twitter #ツイッター',
             fixedTranslations: {'これ': 'foobar'}
+        },
+        {
+            label: 'Multiline hashtag',
+            input: '#Test\n\n\nHello world!',
+            output: '<sh>#Test</sh>\n\n\nHello world!',
+            output_unsanitized: '#Test\n\n\nHello world!',
+            fixedTranslations: {}
         }
     ];
     describe.each(data)(`Sanitize a tweet with...`, (tweet) => {

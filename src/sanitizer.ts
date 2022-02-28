@@ -10,7 +10,7 @@ export const sanitizerTags = ['sh', 'su', 'sw']
  */
 function sanitizeHashtags(text: string): string {
     // Replace hashtags as we do not want to translate them
-    const hashTagRegex = /(#[^ !@#$%^&*(),.?":{}|<>]*)/g;
+    const hashTagRegex = /(#[^ !@#$%^&*(),.?":{}|<>\n]*)/g;
     const replacement = '<sh>$1</sh>';
     return text.replace(hashTagRegex, replacement);
 }
