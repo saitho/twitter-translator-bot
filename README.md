@@ -16,6 +16,7 @@ Usage (environment variables required!): `node dist/index.js`
 * `FIXED_TRANSLATIONS_FILE` - Path to XLF file containing the fixed translations
   * Example: `FIXED_TRANSLATIONS_FILE=./translations.xlf` (see `translations.xlf` in this repository for an example)
 * `TRANSLATABLE_MATCH_EXPRESSION` - regular expression that needs to be matched in order for a text to get translated (default: `[a-zA-Z]+`)
+* `RETWEET_WHEN_NOTRANSATION_NEEDED` - if enabled, tweet will be retweetet when no translation is needed/possible
 
 ## Docker
 
