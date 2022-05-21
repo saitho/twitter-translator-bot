@@ -3,7 +3,7 @@ import translate from './translate'
 import {isTranslatable} from "./language";
 import {run} from "./run";
 import {TweetV2, TwitterApi, TwitterApiv2} from "twitter-api-v2";
-import {anyString, anything, instance, mock, verify, when} from "ts-mockito";
+import {anyString, instance, mock, verify, when} from "ts-mockito";
 import reply from "./reply";
 
 jest.mock('./fetch')
