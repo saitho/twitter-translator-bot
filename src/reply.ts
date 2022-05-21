@@ -44,13 +44,14 @@ export function buildTextParts(text: string, targetLanguage: string): string[] {
     return textParts
 }
 
-export default async function reply(authedClient: TwitterApi, targetLanguage: string, originalTweetId: string, text: string): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
+export default async function reply(authedClient: TwitterApi, targetLanguage: string, originalTweetId: string, text: string): Promise<TweetV2PostTweetResult[]> {
+    return new Promise<TweetV2PostTweetResult[]>(async (resolve, reject) => {
         if (text.length > (TWITTER_CHARACTER_LIMIT - parseTemplate(replyTemplate, targetLanguage, '', 0, 0).length)) {
             // text exceeds limit, split it
             let textParts = buildTextParts(text, targetLanguage)
             let replyId = originalTweetId
             const total = textParts.length
+            const responses = []
             for (const i in textParts) {
                 const curr = (Number(i) + 1)
                 const parsedText = parseTemplate(replySplitTemplate, targetLanguage, textParts[i], curr, total)
@@ -61,9 +62,10 @@ export default async function reply(authedClient: TwitterApi, targetLanguage: st
                     reject()
                     return
                 }
+                responses.push(reply)
                 replyId = reply.data.id
             }
-            resolve()
+            resolve(responses)
             return
         }
 
@@ -71,7 +73,7 @@ export default async function reply(authedClient: TwitterApi, targetLanguage: st
         const parsedText = parseTemplate(replyTemplate, targetLanguage, text, 1, 1)
         logger.debug(`Tweeting translated tweet #${originalTweetId} (tweet 1/1): ${parsedText}`)
         sendReply(authedClient, originalTweetId, parsedText)
-            .then(() => resolve())
+            .then((r) => resolve([r]))
             .catch(reject)
     })
 }
