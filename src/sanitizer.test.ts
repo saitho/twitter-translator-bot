@@ -68,6 +68,20 @@ describe('Sanitizer', () => {
             output: '<sh>#Test</sh>\n\n\nHello world!',
             output_unsanitized: '#Test\n\n\nHello world!',
             fixedTranslations: {}
+        },
+        {
+            label: 'Twitter link',
+            input: 'Check it out! https://t.co/PkMbnALuW',
+            output: 'Check it out!',
+            output_unsanitized: 'Check it out!',
+            fixedTranslations: {}
+        },
+        {
+            label: 'Twitter link with dot',
+            input: 'Check it out! https://t.co/PkMbnALuW. :)',
+            output: 'Check it out!  :)',
+            output_unsanitized: 'Check it out!  :)',
+            fixedTranslations: {}
         }
     ];
     describe.each(data)(`Sanitize a tweet with...`, (tweet) => {

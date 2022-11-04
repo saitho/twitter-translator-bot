@@ -81,6 +81,14 @@ export function unsanitizeTweetText(tweetText: string, fixedTranslations: FixedT
     return tweetText
 }
 
+function sanitizeTwitterLink(text: string): string {
+    return text.replace(/https:\/\/t.co\/\w+(.)?/, '')
+}
+
+function trimText(text: string): string {
+    return text.trim()
+}
+
 /**
  * @param text
  * @param fixedTranslations
@@ -90,6 +98,8 @@ export function sanitizeTweet(text: string, fixedTranslations: FixedTranslations
     sanitizedText = sanitizeHashtags(sanitizedText)
     sanitizedText = sanitizeUsers(sanitizedText)
     sanitizedText = sanitizeWhitelist(sanitizedText, fixedTranslations)
+    sanitizedText = sanitizeTwitterLink(sanitizedText)
+    sanitizedText = trimText(sanitizedText)
 
     return sanitizedText
 }
